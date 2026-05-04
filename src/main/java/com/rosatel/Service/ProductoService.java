@@ -2,7 +2,6 @@ package com.rosatel.Service;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 
@@ -62,11 +61,11 @@ public class ProductoService {
         repoProducto.deleteById(id);
     }
 
-    public void agregarProducto(Producto producto) {
-        repoProducto.save(producto);
+    public Producto agregarProducto(Producto producto) {
+        return repoProducto.save(producto);
     }
 
-    public void editarProducto(Producto producto) {
-        repoProducto.save(producto);
+    public Producto editarProducto(Producto producto) {
+        return repoProducto.save(producto);
     }
 }
