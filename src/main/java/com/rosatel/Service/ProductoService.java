@@ -1,46 +1,72 @@
 package com.rosatel.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 
+import com.rosatel.Model.Categoria;
 import com.rosatel.Model.Producto;
+import com.rosatel.Repository.CategoriaRepository;
 import com.rosatel.Repository.ProductoRepository;
+
+import jakarta.annotation.Nullable;
 
 @Service
 public class ProductoService {
+    private final ProductoRepository repoProducto;
+    private final CategoriaRepository repoCategoria;
 
-    private final ProductoRepository repo;
-
-    public ProductoService(ProductoRepository repo){
-        this.repo = repo;
+    public ProductoService(ProductoRepository repoProducto,
+            CategoriaRepository repoCategoria) {
+        this.repoProducto = repoProducto;
+        this.repoCategoria = repoCategoria;
     }
 
-    public List<Producto> obtenerProductos(){
-        return repo.findAll();
+    public List<Producto> listarProductos(@Nullable Long idCategoria) {
+
+        if (idCategoria == null) {
+            return repoProducto.findAll();
+        }
+
+        Categoria categoria = repoCategoria.findById(idCategoria)
+                .orElseThrow(() -> new RuntimeException("Categoria no encontrada"));
+
+        List<Long> categoriasIds = new ArrayList<>();
+        categoriasIds.add(idCategoria);
+
+        if (categoria.getCategoria_padre() == null) {
+            List<Categoria> hijas = repoCategoria.findByCategoria_padre(idCategoria);
+
+            for (Categoria hija : hijas) {
+                categoriasIds.add(hija.getId());
+            }
+        }
+
+        return repoProducto.findByCategoriaIdIn(categoriasIds);
     }
 
-    public Optional<Producto> obtenerProducto(Long id) {
-        return repo.findById(id);
+    public Producto buscarProducto(Long id) {
+        Producto producto = repoProducto.findById(id)
+                .orElseThrow(() -> new RuntimeException("Producto no encontrado"));
+
+        return producto;
     }
 
-    public void crearProducto(Producto pro){
-        repo.save(pro);
+    public void eliminarProducto(Long id) {
+        if (!repoProducto.existsById(id)) {
+            throw new RuntimeException("Producto no encontrado con id: " + id);
+        }
+
+        repoProducto.deleteById(id);
     }
 
-    public Producto editarProducto(Long id, Producto pro){
-        Producto producto = repo.findById(id).orElseThrow(() -> new RuntimeException("No existe el Producto"));
-
-        producto.setNombre(pro.getNombre());
-        producto.setSku(pro.getSku());
-        producto.setStock(pro.getStock());
-        producto.setPrecio(pro.getPrecio());
-        producto.setDescripcion(pro.getDescripcion());
-        producto.setCategoria(pro.getCategoria());
-        // producto.setEsFavorito(pro.getEsFavorito());
-
-        return repo.save(producto);
+    public void agregarProducto(Producto producto) {
+        repoProducto.save(producto);
     }
-    
+
+    public void editarProducto(Producto producto) {
+        repoProducto.save(producto);
+    }
 }
