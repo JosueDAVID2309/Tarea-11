@@ -8,7 +8,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.OncePerRequestFilter;
 import com.rosatel.Service.TokenService;
 import com.rosatel.Model.Cliente;
-import java.util.Collections;
 import java.util.List;
 
 import jakarta.servlet.FilterChain;

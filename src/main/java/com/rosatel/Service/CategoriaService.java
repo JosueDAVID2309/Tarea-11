@@ -28,13 +28,13 @@ public class CategoriaService {
 
     }
 
-    public void agregarCategoria(Categoria categoria) {
+    public Categoria agregarCategoria(Categoria categoria) {
         controlErrores(categoria);
-        repoCategoria.save(categoria);
+        return repoCategoria.save(categoria);
     }
 
-    public void editarCategoria(Categoria categoria) {
-        repoCategoria.save(categoria);
+    public Categoria editarCategoria(Categoria categoria) {
+        return repoCategoria.save(categoria);
     }
 
     public void eliminarCategoria(Long idCategoria){
